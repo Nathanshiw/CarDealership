@@ -1,0 +1,425 @@
+#!/bin/bash
+. db2init
+db2 connect to db2data
+PS3='Please enter your menu choice: '
+options=("create" "populate" "drop" "quit")
+options1=("VehicleList" "CustomerList" "EmployeeList" "RepairList" "VehicleTransactions" "ManufacturerVehicle" "quit")
+options2=("fileInsert" "manualInsert" "select" "delete" "quit")
+
+select opt in "${options[@]}"
+do
+   case $opt in
+        "create")
+            PS3='which table would you like to create?: '
+            select opt in "${options1[@]}"
+            do
+                case $opt in
+                "VehicleList")
+               db2 "Create table VehicleList(
+                    Veh_id char(10) NOT NULL,
+                    Veh_Make char(20),
+                    Veh_Model char(20),
+                    Veh_Year int,
+                    O_S_R char(10),
+                    In_Stock char(5),
+                    primary key (Veh_id))"
+                    echo "1) VehicleList"
+                    echo "2) CustomerList"
+                    echo "3) EmployeeList"
+                    echo "4) RepairList"
+                    echo "5) VehicleTransactions"
+                    echo "6) ManufacturerVehicle"
+                    echo "7) quit"
+                    PS3='What table would you like to create?: '
+
+                ;;
+                "CustomerList")
+
+               db2 "Create table CustomerList(
+                    Customer_id char(10) NOT NULL,
+                    Customer_Name char(20),
+                    Customer_Address char(50),
+                    C_Phone_Number bigint,
+                    C_Credit_Card bigint,
+                    C_Gender char(7),
+                    primary key (Customer_id))"
+                    echo "1) VehicleList"
+                    echo "2) CustomerList"
+                    echo "3) EmployeeList"
+                    echo "4) RepairList"
+                    echo "5) VehicleTransactions"
+                    echo "6) ManufacturerVehicle"
+                    echo "7) quit"
+                    PS3='What table would you like to create?: '
+
+                ;;
+                "EmployeeList")
+               db2 "Create table EmployeeList(
+                    Employee_id char(10)NOT NULL,
+                    Employee_Name char(35),
+                    Employee_Address char(50),
+                    E_Gender char(7),
+                    E_Phone_Number bigint,
+                    E_Department char(15),
+                    E_Commission decimal(10,2),
+                    primary key (Employee_id))"
+                    echo "1) VehicleList"
+                    echo "2) CustomerList"
+                    echo "3) EmployeeList"
+                    echo "4) RepairList"
+                    echo "5) VehicleTransactions"
+                    echo "6) ManufacturerVehicle"
+                    echo "7) quit"
+                    PS3='What table would you like to create?: '
+
+                ;;
+                "RepairList")
+               db2 "Create table RepairList(
+                    Ref_Number char(6) NOT NULL,
+                    Veh_id char(10),
+                    Customer_id char(10),
+                    Licence_plate char(20),
+                    Completed char(4),
+                    Condition char(10),
+                    Cost_of_Repair decimal(12,2),
+                    Employee_id char(10),
+                    Date_in date,
+                    Date_out date,
+                    Comments char(140),
+                    primary key (Ref_Number),
+                    foreign key (Veh_id) references VehicleList ON DELETE CASCADE)"
+                    echo "1) VehicleList"
+                    echo "2) CustomerList"
+                    echo "3) EmployeeList"
+                    echo "4) RepairList"
+                    echo "5) VehicleTransactions"
+                    echo "6) ManufacturerVehicle"
+                    echo "7) quit"
+                    PS3='What table would you like to create?: '
+
+                ;;
+                 "VehicleTransactions")
+               db2 "Create table VehicleTransactions(
+                    Ref_Number char(12) NOT NULL,
+                    Veh_id char(12),
+                    Employee_id char(12),
+                    Customer_id char(12),
+                    Licence_plate char(20),
+                    Price decimal(10,2),
+                    Sold_Bought char(12),
+                    Com_Made decimal(10,2),
+                    Date_of_T date,
+                    Quality char(12),
+                    Vehicle_Description char(160),
+                    New_Used char(60),
+                    Comments char(160),
+                    primary key (Ref_Number),
+                    foreign key (Veh_id) references VehicleList ON DELETE CASCADE,
+                foreign key (Employee_id) references EmployeeList ON DELETE CASCADE)"
+                    echo "1) VehicleList"
+                    echo "2) CustomerList"
+                    echo "3) EmployeeList"
+                    echo "4) RepairList"
+                    echo "5) VehicleTransactions"
+                    echo "6) ManufacturerVehicle"
+                    echo "7) quit"
+                    PS3='What table would you like to create?: '
+
+                ;;
+                 "ManufacturerVehicle")
+               db2 "Create table ManufacturerVehicle(
+                    Ref_Number char(10) NOT NULL,
+                    Veh_id char(20),
+                    Date_Ordered date,
+                    Date_Recieved date,
+                    primary key (Ref_Number),
+                    foreign key (Veh_id) references VehicleList ON DELETE CASCADE)"
+                    echo "1) VehicleList"
+                    echo "2) CustomerList"
+                    echo "3) EmployeeList"
+                    echo "4) RepairList"
+                    echo "5) VehicleTransactions"
+                    echo "6) ManufacturerVehicle"
+                    echo "7) quit"
+                    PS3='What table would you like to create?: '
+                ;;
+
+                "quit")
+                    echo "Main Menu"
+                    echo "1) create"
+                    echo "2) populate"
+                    echo "3) drop"
+                    echo "4) quit"
+                    PS3='Please enter your menu choice: '
+                    break
+                ;;
+                *) echo invalid option;;
+            esac
+        done
+        ;;
+        "populate")
+            PS3='What would you like to do to the table? '
+            select opt in "${options2[@]}"
+            do
+                case $opt in
+                "fileInsert")
+                 echo "Enter query file to use for command"
+                 read query
+                 db2 -vtf $(echo $query)
+                 echo "1) fileInsert"
+                 echo "2) manualInsert"
+                 echo "3) search"
+                 echo "4) delete"
+                 echo "5) quit"
+                 PS3='Please enter your menu choice: '
+
+                ;;
+                "manualInsert")
+                     db2 "list tables"
+                     echo "What Table would you like to insert into? "
+                     read theTable
+                     case $theTable in
+                     "VehicleList")
+                     echo "Enter Veh_id (String): "
+                     read id
+                     echo "Enter Make (String): "
+                     read make
+                     echo "Enter Model (String): "
+                     read model
+                     echo "Enter Year (4 digit): "
+                     read year
+                     echo "Enter Own_Sold_Repair (String)?: "
+                     read osr
+                     echo "Enter if in Stock: (Yes or No)"
+                     read inventory
+
+                     db2 "INSERT INTO "$theTable" VALUES('$id', '$make', '$model', '$year', '$osr', '$inventory')"
+                     echo "1) fileInsert"
+                     echo "2) manualInsert"
+                     echo "3) search"
+                     echo "4) delete"
+                     echo "5) quit"
+                     PS3='Please enter your menu choice: '
+
+                    ;;
+
+                     "CustomerList")
+                     echo "Enter customer id (String): "
+                     read id
+                     echo "Enter Name (String): "
+                     read name
+                     echo "Enter Address (String): "
+                     read address
+                     echo "Enter Phone Number (Int): "
+                     read phone
+                     echo "Enter Credit Card (Int): "
+                     read cc
+                     echo "Enter Gender (String): "
+                     read gender
+                     db2 "INSERT INTO "$theTable" VALUES('$id', '$name', '$address', '$phone', '$cc', '$gender')"
+                     echo "1) fileInsert"
+                     echo "2) manualInsert"
+                     echo "3) select"
+                     echo "4) deletee"
+                     echo "5) quit"
+                     PS3='Please enter your menu choice: '
+
+                     ;;
+
+                     "EmployeeList")
+                     echo "Enter Employee id (String): "
+                     read id
+                     echo "Enter Name (String): "
+                     read name
+                     echo "Enter Address (String): "
+                     read address
+                     echo "Enter Gender (String): "
+                     read gender
+                     echo "Enter Phone Number (Int): "
+                     read phone
+                     echo "Enter Department (String): "
+                     read department
+                     echo "Enter the commision for the employee (Decimal): "
+                     read commision
+                     db2 "INSERT INTO "$theTable" VALUES('$id', '$name', '$address', '$gender', '$phone', '$department', '$commision')"
+                     echo "1) fileInsert"
+                     echo "2) manualInsert"
+                     echo "3) search"
+                     echo "4) delete"
+                     echo "5) quit"
+                     PS3='Please enter your menu choice: '
+
+                     ;;
+
+                     "RepairList")
+                     echo "Enter Reference_number (String): "
+                     read ref
+                     echo "Enter Veh_id (String): "
+                     read id
+                     echo "Enter Cust_id (String): "
+                     read cust
+                     echo "Enter License_plate (String): "
+                     read lp
+                     echo "Enter if the repair is completed or not (Yes or No): "
+                     read comp
+                     echo "Enter Condition (String): "
+                     read cond
+                     echo "Enter Cost of Repair (Decimal): "
+                     read cor
+                     echo "Enter Emp_id (String): "
+                     read emp
+                     echo "Enter Date_in (YYYY-MM-DD): "
+                     read din
+                     echo "Enter Date_out (YYYY-MM-DD): "
+                     echo "Enter blank if vehicle is still in shop"
+                     read dout
+                     echo "Enter Comments (String): "
+                     read comment
+                     db2 "INSERT INTO VehicleList (Veh_id, In_Stock) VALUES('$id', 'No')"
+                     db2 "INSERT INTO CustomerList (Customer_id) VALUES('$cust')"
+                     db2 "INSERT INTO "$theTable" VALUES('$ref', '$id', '$cust', '$lp', '$comp', '$cond', '$cor', '$emp', '$din', '$dout', '$comment')"
+                     echo "1) fileInsert"
+                     echo "2) manualInsert"
+                     echo "3) search"
+                     echo "4) delete"
+                     echo "5) quit"
+                     PS3='Please enter your menu choice: '
+                     ;;
+
+                     "VehicleTransactions")
+                     echo "Enter Reference Number (String) "
+                     read ref
+                     echo "Enter Vehicle id (String): "
+                     read id
+                     echo "Enter Employee id(String): "
+                     read id2
+                     echo "Enter Customer id (String): "
+                     read cust
+                     echo "Enter License plate (String): "
+                     read lp
+                     echo "Enter Price (Double): "
+                     read price
+                     echo "Enter if the dealership is selling or buying a car (Sold or Bought): "
+                     read sobo
+                     echo "Enter Date of Transactions (YYYY-MM-DD HH:MM:SS): "
+                     read dot
+                     echo "Enter quality (String): "
+                     read qual
+                     echo "Enter Vehicle Description (String): "
+                     read vd
+                     echo "Enter New_Used (New or Used): "
+                     read nu
+                     echo "Enter Comments (String): "
+                     read comment
+                 if [ "$sobo" = 'Bought' ]; then
+                   db2 "INSERT INTO VehicleList (Veh_id, In_Stock) VALUEES('$id', 'Yes')"
+                fi
+                  if [ "$sobo" = 'Sold' ]; then
+
+                db2 "UPDATE VehicleList SET In_Stock='No' WHERE Veh_id='$id' "
+                 fi
+                commiss=$(echo $price*0.05 | bc)
+                    db2 "INSERT INTO "$theTable" VALUES('$ref', '$id', '$id2', '$cust', '$lp', '$price', '$sobo', '$commiss', '$dot', '$qual', '$vd', '$nu', '$comment')"
+                     echo "1) fileInsert"
+                     echo "2) manualInsert"
+                     echo "3) search"
+                     echo "4) delete"
+                     echo "5) quit"
+                     PS3='Please enter your menu choice: '
+
+                    ;;
+
+                     "ManufacturerVehicle")
+                     echo "Enter Reference_number (String): "
+                     read ref
+                     echo "Enter Veh_id (String): "
+                     read id
+                     echo "Enter DateOrdered (MM/DD/YYYY): "
+                     read order
+                     echo "Enter DateRecieved (MM/DD/YYYY): "
+                     read recieve
+                     db2 "INSERT INTO VehicleList (Veh_id, In_Stock) VALUES('$id', 'Yes')"
+                     db2 "INSERT INTO "$theTable" VALUES('$ref', '$id', '$order', '$recieve')"
+
+                     echo "1) fileInsert"
+                     echo "2) manualInsert"
+                     echo "3) search"
+                     echo "4) delete"
+                     echo "5) quit"
+                     PS3='Please enter your menu choice: '
+                     ;;
+
+                  *)
+                 esac
+             ;;
+
+               "select")
+               db2 "list tables"
+               echo "What Table would you like to select: "
+               read tableSelect
+               echo "What would you like to view in this table(Enter * for everything or a specific column: "
+               read choice
+
+               if [ "$choice" = "C_Credit_Card" ]; then
+                  echo "You may not look at the Credit Card List"
+               else
+                  db2 "Select "$choice" From "$tableSelect""
+               fi
+               echo "1) fileInsert"
+               echo "2) manualInsert"
+               echo "3) search"
+               echo "4) delete"
+               echo "5) quit"
+               PS3='Please enter your menu choice: '
+
+               ;;
+
+                "delete")
+                db2 "list tables"
+                echo "Enter the table name you would like to delete from:  "
+                read theTables
+                echo "Enter what column to look under: "
+                read column
+                echo "What value to delete"
+                read value
+                db2 "DELETE FROM "$theTables" WHERE "$column"='$value'"
+                echo "1) fileInsert"
+                echo "2) manualInsert"
+                echo "3) search"
+                echo "4) delete"
+                echo "5) quit"
+                PS3='Please enter your menu choice: '
+
+                ;;
+
+                "quit")
+                echo "1) create"
+                echo "2) populate"
+                echo "3) drop"
+                echo "4) quit"
+                PS3='Please enter your menu choice: '
+                break
+                ;;
+               *) echo invalid option;;
+            esac
+        done
+
+        ;;
+        "drop")
+            db2 "list tables"
+            echo "What table would you like to drop"
+            read dropped
+            db2 "drop table "$dropped""
+                echo "1) create"
+                echo "2) populate"
+                echo "3) drop"
+                echo "4) quit"
+                PS3='Please enter your menu choice: '
+
+            ;;
+        "quit")
+            break
+            ;;
+        *) echo "Invalid option";;
+    esac
+done
